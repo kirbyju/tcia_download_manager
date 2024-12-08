@@ -102,5 +102,5 @@ jobs:
             -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
             -H "Content-Type: application/zip" \
             --data-binary @"$file" \
-            "${{ steps.create_release.outputs.upload_url }}?name=$file_name&label=$file_name"
+            "${{ steps.create_release.outputs.upload_url }}?name=$asset_name&label=$asset_name"
         done
