@@ -26,9 +26,12 @@ jobs:
         pip install build pyinstaller toml
     - name: Extract Version from pyproject.toml
       id: get_version
-      run: |
-        VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
+      run:
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          $env:VERSION = python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])"
+        else
+          VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
+        fi
     - name: Build Application
       run: |
         pyinstaller --onefile --name tcia_download_manager src/tcia_download_manager/__main__.py
