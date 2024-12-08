@@ -31,7 +31,7 @@ jobs:
         echo "VERSION=$VERSION" >> $GITHUB_ENV
     - name: Build Application
       run: |
-        pyinstaller --onefile -n tcia_download_manager tcia_download_manager/__main__.py
+        pyinstaller pyinstaller --onefile --name tcia_download_manager -m tcia_download_manager
       shell: bash
     - name: Upload Build Artifact (Windows)
       if: matrix.os == 'windows-latest'
