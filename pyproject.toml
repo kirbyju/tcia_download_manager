@@ -13,6 +13,12 @@ authors = [
     {name = "Justin Kirby", email = "justin.kirby@nih.gov"}
 ]
 
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+
 dependencies = [
     "pandas",
     "requests",
@@ -20,15 +26,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/kirbyju/pathDB-Data-Retriever"
+Homepage = "https://github.com/kirbyju/tcia_download_manager"
 
 [project.scripts]
 tcia-download-manager = "tcia_download_manager.downloader:main"
-
-[project.classifiers]
-"Programming Language :: Python :: 3" = ""
-"License :: OSI Approved :: Apache Software License" = ""
-"Operating System :: OS Independent" = ""
 
 [tool.setuptools.packages.find]
 where = ["src"]
