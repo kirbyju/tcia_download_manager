@@ -66,10 +66,11 @@ jobs:
         cd artifacts
 
         for zipfile in *.zip; do
-          unzip "$zipfile" -d release_assets/
+          dir_name=$(basename "$zipfile" .zip)
+          unzip "$zipfile" -d "../release_assets/$dir_name/"
         done
 
-        cd release_assets
+        cd ../release_assets
         for os in windows macos ubuntu; do
           if [ -d "$os" ]; then
             cd "$os"
