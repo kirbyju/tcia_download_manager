@@ -71,13 +71,14 @@ jobs:
         done
 
         cd ../release_assets
-        for os in windows macos ubuntu; do
-          if [ -d "$os" ]; then
-            cd "$os"
-            zip "../tcia_download_manager-${os}.zip" *
-            cd ..
-          fi
+        for dir in */; do
+          cd "$dir"
+          zip "../tcia_download_manager-${dir%/}.zip" *
+          cd ..
         done
+
+    - name: List Release Assets
+      run: ls -alh release_assets/
 
     - name: Create Release
       id: create_release
