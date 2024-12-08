@@ -1,6 +1,8 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-from .gui import PathologyDownloadManager
+
+# Use absolute import
+from tcia_download_manager.gui import PathologyDownloadManager
 
 def main():
     app = QApplication(sys.argv)
