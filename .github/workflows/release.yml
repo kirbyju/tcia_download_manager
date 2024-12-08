@@ -73,7 +73,7 @@ jobs:
         cd ../release_assets
         for dir in */; do
           cd "$dir"
-          zip "../tcia_download_manager-${dir%/}.zip" *
+          zip "../${dir%/}.zip" *
           cd ..
         done
 
