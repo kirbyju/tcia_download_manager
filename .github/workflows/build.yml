@@ -43,7 +43,7 @@ jobs:
 
     - name: Build Application
       run: |
-        pyinstaller --onefile --name tcia_download_manager --hidden-import PyQt5 src/tcia_download_manager/__main__.py
+        pyinstaller --onefile --name tcia_download_manager src/tcia_download_manager/__main__.py
       shell: bash
 
     - name: List Dist Directory
