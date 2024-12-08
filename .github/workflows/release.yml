@@ -14,17 +14,10 @@ jobs:
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
-
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.11
-
-    - name: Extract Version from setup.py
+    - name: Extract Version from pyproject.toml
       run: |
-        VERSION=$(python -c "import re; print(re.search(r\"version='([^']*)'\", open('setup.py').read()).group(1))")
+        VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
         echo "VERSION=$VERSION" >> $GITHUB_ENV
-
     - name: Download Artifacts
       uses: actions/github-script@v7
       with:
@@ -54,44 +47,23 @@ jobs:
 
             fs.writeFileSync(path.join('artifacts', `${artifact.name}.zip`), Buffer.from(download.data));
           }
-
-    - name: List Artifacts
-      run: |
-        ls artifacts/
-
     - name: Prepare Release Assets
       run: |
         mkdir -p release_assets
         cd artifacts
 
-        # Create separate directories to prevent overwriting
-        mkdir -p ../windows ../macos ../ubuntu
-
-        # Use wildcards to find and extract artifacts
-        for zipfile in tcia_download_manager*windows*.zip; do
-          unzip "$zipfile" -d ../windows
+        for zipfile in *.zip; do
+          unzip "$zipfile" -d release_assets/
         done
 
-        for zipfile in tcia_download_manager*macos*.zip; do
-          unzip "$zipfile" -d ../macos
+        cd release_assets
+        for os in windows macos ubuntu; do
+          if [ -d "$os" ]; then
+            cd "$os"
+            zip "../tcia_download_manager-${os}.zip" *
+            cd ..
+          fi
         done
-
-        for zipfile in tcia_download_manager*ubuntu*.zip; do
-          unzip "$zipfile" -d ../ubuntu
-        done
-
-        # Zip artifacts in their respective directories
-        cd ../windows
-        zip "../tcia_download_manager-windows.zip" *
-
-        cd ../macos
-        chmod +x *
-        zip "../tcia_download_manager-macos.zip" *
-
-        cd ../ubuntu
-        chmod +x *
-        zip "../tcia_download_manager-ubuntu.zip" *
-
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -104,36 +76,12 @@ jobs:
           Automated release of tcia_download_manager
         draft: false
         prerelease: false
-
-    - name: Upload Windows Release Asset
+    - name: Upload Release Assets
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: tcia_download_manager-windows.zip
-        asset_name: tcia_download_manager-windows.zip
+        asset_path: release_assets/tcia_download_manager-*.zip
+        asset_name: ${{ matrix.os }}.zip
         asset_content_type: application/zip
-      continue-on-error: true
-
-    - name: Upload macOS Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: tcia_download_manager-macos.zip
-        asset_name: tcia_download_manager-macos.zip
-        asset_content_type: application/zip
-      continue-on-error: true
-
-    - name: Upload Ubuntu Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: tcia_download_manager-ubuntu.zip
-        asset_name: tcia_download_manager-ubuntu.zip
-        asset_content_type: application/zip
-      continue-on-error: true
